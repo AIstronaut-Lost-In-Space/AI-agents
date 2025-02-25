@@ -16,7 +16,8 @@ const gameSchema = new mongoose.Schema({
   }],
   evaluation: {
     agentId: String, 
-    evaluationReason: String
+    evaluationReason: String,
+    focusedAttribute: String
   },
   createdAt: {
     type: Date,
@@ -24,8 +25,48 @@ const gameSchema = new mongoose.Schema({
   }
 });
 
+//user schema
+const userSchema = new mongoose.Schema({
+
+
+name:{
+  type: String,
+  required: true  
+},
+walletAddress:{
+  type: String,
+  required: true
+},
+avatarID:{
+  type: String,
+  required: true
+},
+agentBio:{
+  type: String,
+  required: true
+},
+stats:{
+  type: Object,
+  //{str, int, surInst} define the object for stats
+  str: {
+    type: Number,
+    required: true
+  },
+  int: {
+    type: Number,
+    required: true
+  },
+  surInst:{
+    type: Number,
+    required: true
+  },
+  required: true
+},
+});
+
 // Create Game model
 export const Game = mongoose.model('Game', gameSchema);
+export const User = mongoose.model('User', userSchema);
 
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)

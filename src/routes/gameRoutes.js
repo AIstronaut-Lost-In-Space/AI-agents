@@ -21,7 +21,8 @@ router.get('/play', async (req, res) => {
                 
             evaluation: {
                 agentId:gameResult.messages.find(msg => msg.additional_kwargs?.is_evaluation)?.additional_kwargs.agentId,
-                evaluationReason:gameResult.messages.find(msg => msg.additional_kwargs?.is_evaluation)?.additional_kwargs.evaluationReason
+                evaluationReason:gameResult.messages.find(msg => msg.additional_kwargs?.is_evaluation)?.additional_kwargs.evaluationReason,
+                focusedAttribute:gameResult.messages.find(msg => msg.additional_kwargs?.is_evaluation)?.additional_kwargs.focused_attribute
             }
             };
         // Save game to MongoDB
@@ -48,3 +49,4 @@ router.get('/problems', async (req, res) => {
         prevProblems
     });
 });
+
