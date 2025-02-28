@@ -22,6 +22,15 @@ class AgentRegistry {
     });
   }
 
+  updateAgentStats(username, newStats) {
+    const agent = this.agents.get(username);
+    if (agent) {
+      agent.stats = { ...agent.stats, ...newStats };
+      return true;
+    }
+    return false;
+  }
+
   getAgent(username) {
     return this.agents.get(username);
   }
@@ -32,6 +41,7 @@ class AgentRegistry {
 }
 
 // Initialize the registry
+
 const agentRegistry = new AgentRegistry();
 
 // Master LLM for problem generation and evaluation
@@ -211,4 +221,8 @@ export async function runGame() {
 // Function to add new agent
 export function addNewAgent(username, personality, stats) {
   agentRegistry.addAgent(username, personality, stats);
+}
+
+export async function updateAgentStats(username, newStats) {
+  return agentRegistry.updateAgentStats(username, newStats);
 }

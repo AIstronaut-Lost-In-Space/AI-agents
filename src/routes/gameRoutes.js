@@ -1,4 +1,4 @@
-import { runGame, addNewAgent } from '../game.js';
+import { runGame, addNewAgent, updateAgentStats } from '../game.js';
 import express from 'express';
 import { Game, User, prevProblemSummary } from '../server.js';
 export const router = express.Router();
@@ -175,6 +175,68 @@ router.get('/games/:gameId', async (req, res) => {
             game
         });
     } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Add new route for updating agent stats
+router.put('/agents/:walletAddress/stats', async (req, res) => {
+    try {
+        const { walletAddress } = req.params;
+        const { stats } = req.body;
+
+        // Validate stats
+        if (!stats || !stats.strength || !stats.intelligence || !stats.survivalInstincts) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid stats object'
+            });
+        }
+
+        // Update user in database
+        const user = await User.findOneAndUpdate(
+            { walletAddress },
+            { 
+                $set: { 
+                    'stats.strength': stats.strength,
+                    'stats.intelligence': stats.intelligence,
+                    'stats.survivalInstincts': stats.survivalInstincts
+                }
+            },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Agent not found'
+            });
+        }
+
+        // Update agent in game registry
+        const updated = updateAgentStats(user.name, {
+            strength: stats.strength,
+            intelligence: stats.intelligence,
+            survivalInstincts: stats.survivalInstincts
+        });
+
+        if (!updated) {
+            return res.status(404).json({
+                success: false,
+                error: 'Agent not found in registry'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Agent stats updated successfully',
+            agent: user
+        });
+    } catch (error) {
+        console.error('Stats update error:', error);
         res.status(500).json({
             success: false,
             error: error.message
